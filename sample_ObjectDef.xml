@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sel-objects>
+	<configurations>
+		<browser-driver>InternetExplorerDriver</browser-driver>
+		<test-url>http://www.facebook.com/</test-url>
+	</configurations>
+	
+	<object id="faceBookLoginUserName" type="SeleniumTextBox">
+		<location>//*[@id="email"]</location>
+	</object>
+	
+	<object id="faceBookLoginPassWord" type="SeleniumTextBox">
+		<location>//*[@id="pass"]</location>
+	</object>
+	
+	<object id="faceBookLoginButton" type="SeleniumButton">
+		<location>//*[@id="loginbutton"]</location>
+	</object>
+	
+	<object id="loginDialog" type="FaceBookLoginDialog">
+		<component name="userName" ref="faceBookLoginUserName" />
+		<component name="password" ref="faceBookLoginPassWord" />
+		<component name="loginButton" ref="faceBookLoginButton" />
+	</object>
+	
+	<object id="loginErrorMsgBox" type="SeleniumPanel">
+		<location>//*[@id="error"]</location>
+	</object>
+</sel-objects>
