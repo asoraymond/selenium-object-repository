@@ -8,6 +8,11 @@
  *             
  */
 
+/*
+ * Last Committed Details
+ * $Id$
+ */
+
 package com.selenium.repo.core;
 
 import java.util.List;
@@ -23,101 +28,125 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.thoughtworks.selenium.Selenium;
 
 /**
- * Implement a instance of the WebDriver interface and abstracts all the methods provided by the driver
+ * Implement a instance of the WebDriver interface and abstracts all the methods
+ * provided by the driver
+ * 
  * @author Suren Rodrigo
  * @version 1.1
  */
 public class BrowserDriver implements WebDriver {
 
-    private static final int MAX_TIME_OUT_FOR_ELEMENT = 20;
-    private WebDriver driver;
-    private Selenium selenium;
-    public static final String MAX_TIME_OUT = "1000000000";
+	private static final int MAX_TIME_OUT_FOR_ELEMENT = 20;
+	private WebDriver driver;
+	private Selenium selenium;
+	public static final String MAX_TIME_OUT = "1000000000";
 
-    public BrowserDriver(WebDriver driver, String baseURL) {
-        this.driver = driver;
-        this.selenium = new WebDriverBackedSelenium(driver, baseURL);
-    }
+	public BrowserDriver(WebDriver driver, String baseURL) {
+		this.driver = driver;
+		this.selenium = new WebDriverBackedSelenium(driver, baseURL);
+	}
 
-    public Selenium getSelenium() {
-        return selenium;
-    }
+	public Selenium getSelenium() {
+		return selenium;
+	}
 
-    @Override
-    public void close() {
-        driver.close();
-    }
+	@Override
+	public void close() {
+		driver.close();
+	}
 
-    @Override
-    public WebElement findElement(By arg0) {
-        return driver.findElement(arg0);
-    }
+	@Override
+	public WebElement findElement(By arg0) {
+		return driver.findElement(arg0);
+	}
 
-    @Override
-    public List<WebElement> findElements(By arg0) {
-        return driver.findElements(arg0);
-    }
+	@Override
+	public List<WebElement> findElements(By arg0) {
+		return driver.findElements(arg0);
+	}
 
-    @Override
-    public void get(String arg0) {
-        selenium.open(arg0);
-        selenium.waitForPageToLoad(MAX_TIME_OUT);
+	@Override
+	public void get(String arg0) {
+		selenium.open(arg0);
+		selenium.waitForPageToLoad(MAX_TIME_OUT);
 
-    }
+	}
 
-    @Override
-    public String getCurrentUrl() {
-        return driver.getCurrentUrl();
-    }
+	@Override
+	public String getCurrentUrl() {
+		return driver.getCurrentUrl();
+	}
 
-    @Override
-    public String getPageSource() {
-        return driver.getPageSource();
-    }
+	@Override
+	public String getPageSource() {
+		return driver.getPageSource();
+	}
 
-    @Override
-    public String getTitle() {
-        return driver.getTitle();
-    }
+	@Override
+	public String getTitle() {
+		return driver.getTitle();
+	}
 
-    @Override
-    public String getWindowHandle() {
-        return driver.getWindowHandle();
-    }
+	@Override
+	public String getWindowHandle() {
+		return driver.getWindowHandle();
+	}
 
-    @Override
-    public Set<String> getWindowHandles() {
-        return driver.getWindowHandles();
-    }
+	@Override
+	public Set<String> getWindowHandles() {
+		return driver.getWindowHandles();
+	}
 
-    @Override
-    public Options manage() {
-        return driver.manage();
-    }
+	@Override
+	public Options manage() {
+		return driver.manage();
+	}
 
-    @Override
-    public Navigation navigate() {
-        return driver.navigate();
-    }
+	@Override
+	public Navigation navigate() {
+		return driver.navigate();
+	}
 
-    @Override
-    public void quit() {
-        selenium.stop();
-    }
+	@Override
+	public void quit() {
+		selenium.stop();
+	}
 
-    @Override
-    public TargetLocator switchTo() {
-        return driver.switchTo();
-    }
+	@Override
+	public TargetLocator switchTo() {
+		return driver.switchTo();
+	}
 
-    public BaseElement waitForElementToLoad(final BaseElement element) {
-        (new WebDriverWait(driver, MAX_TIME_OUT_FOR_ELEMENT)).until(new ExpectedCondition<WebElement>() {
+	/**
+	 * Wait for a given "element" to appear, or time out in MAX_TIME_OUT_FOR_ELEMENT
+	 *
+	 * @param element
+	 * @return
+	 */
+	public BaseElement waitForElementToLoad(final BaseElement element) {
+		(new WebDriverWait(driver, MAX_TIME_OUT_FOR_ELEMENT))
+				.until(new ExpectedCondition<WebElement>() {
 
-            @Override
-            public WebElement apply(WebDriver driver) {
-                return driver.findElement(By.xpath(element.getElementXPath()));
-            }
-        });
-        return element;
-    }
+					@Override
+					public WebElement apply(WebDriver driver) {
+						return driver.findElement(By.xpath(element
+								.getElementXPath()));
+					}
+				});
+		return element;
+	}
+
+	/**
+	 * Wait for a test to appear in a given "containing object". Use this method when you want 
+	 * to clarify a given text is appearing within a given containing object.
+	 * @param textToAppear - text that should appear
+	 * @param containgObject - specify the containing object of the text
+	 * @return
+	 */
+	public Boolean waitForTextToAppearInObject(final String textToAppear,
+			final SeleniumObject containgObject) {
+		this.waitForElementToLoad(containgObject);
+		return selenium.isTextPresent(textToAppear);
+
+	}
 }

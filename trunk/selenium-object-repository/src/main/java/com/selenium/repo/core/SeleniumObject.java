@@ -12,9 +12,38 @@
  * Last Committed Details
  * $Id$
  */
-
 package com.selenium.repo.core;
 
-public enum BaseObjectTypes {
-    PANEL, BUTTON, LABEL, TEXT_BOX, DROP_DOWN, RADIO_BUTTON, CHECK_BOX, TEXT_AREA, LINK, IMAGE;
+public class SeleniumObject extends BaseElement {
+
+	public SeleniumObject() {
+		super();
+	}
+
+	@Override
+	public void click() {
+		this.getDriver().waitForElementToLoad(this).getElement().click();
+	}
+
+	@Override
+	public void rightClick() {
+
+		this.getDriver().waitForElementToLoad(this).rightClick();
+	}
+
+	@Override
+	public void setProvider(SeleniumProvider provider) {
+		super.setProvider(provider);
+	}
+
+	@Override
+	public String getText() {
+		return this.getDriver().waitForElementToLoad(this).getElement()
+				.getText();
+	}
+
+	@Override
+	public void sendKeys(CharSequence... arg0) {
+		this.getDriver().waitForElementToLoad(this).getElement().sendKeys(arg0);
+	}
 }
