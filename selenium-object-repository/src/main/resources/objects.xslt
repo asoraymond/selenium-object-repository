@@ -1,17 +1,28 @@
-<?xml version='1.0' encoding='windows-1252'?>
-<!-- 
-/*
- * Copyright (c) 2012 Suren Rodrigo
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
- *  
- *             
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- /* * Copyright (c) 2012 Suren Rodrigo * * /
+	Permission is hereby granted, 
+	free of charge, to any person obtaining a copy of this software and associated 
+	documentation files (the "Software"), to deal in the Software without restriction, 
+	including without limitation the rights to use, copy, modify, merge, publish, 
+	distribute, sublicense, and/or sell copies of the Software, and to permit 
+	persons to whom the Software is furnished to do so, subject to the following 
+	conditions: * The above copyright notice and this permission notice shall 
+	be included in all copies or substantial portions of the Software. * THE 
+	SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR 
+	A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+	COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
+	IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+	WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. * * */
+	
+	/*
+ * Last Committed Details
+ * $Id:$
  */
- -->
+	 -->
 <xsl:stylesheet version="1.0"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.springframework.org/schema/beans"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context">
 
 	<xsl:variable name="package.path">com.selenium.repo.objects</xsl:variable>
 	<xsl:variable name="grid.url">
@@ -23,7 +34,7 @@
 	<xsl:variable name="test.server.url">
 		<xsl:value-of select="/sel-objects/configurations/test-url" />
 	</xsl:variable>
-	
+
 	<xsl:variable name="key.map.class.path">
 		<xsl:value-of select="keyclassmap.properties" />
 	</xsl:variable>
@@ -81,38 +92,35 @@
 					</bean>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:for-each select="sel-objects/object">
-				<xsl:element name="bean">
-					<xsl:attribute name="id">
-					<xsl:value-of select="@id"></xsl:value-of>
-				</xsl:attribute>
-					<xsl:attribute name="class">
+			<xsl:apply-templates />
+		</beans>
+	</xsl:template>
+	
+	<xsl:template match="configurations"></xsl:template>
+
+	<xsl:template match="object">
+		<xsl:element name="bean">
+			<xsl:attribute name="id">
+					<xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
+			<xsl:attribute name="class">
 					<xsl:value-of select="$package.path" />.<xsl:value-of select="@type" />
 				</xsl:attribute>
-					<xsl:choose>
-						<xsl:when test="location">
-							<xsl:element name="property">
-								<xsl:attribute name="name">elementXPath</xsl:attribute>
-								<xsl:attribute name="value"><xsl:value-of
-									select="location" /></xsl:attribute>
-							</xsl:element>
-							<property name="provider" ref="seleniumProvider" />
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:for-each select="component">
-								<xsl:element name="property">
-									<xsl:attribute name="name">
-									<xsl:value-of select="@name" />
-								</xsl:attribute>
-									<xsl:attribute name="ref">
-									<xsl:value-of select="@ref" />
-								</xsl:attribute>
-								</xsl:element>
-							</xsl:for-each>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:element>
-			</xsl:for-each>
-		</beans>
+			<xsl:apply-templates />
+			<property name="provider" ref="seleniumProvider" />
+		</xsl:element>
+	</xsl:template>
+
+	<xsl:template match="object/location">
+		<xsl:element name="property">
+			<xsl:attribute name="name">elementXPath</xsl:attribute>
+			<xsl:attribute name="value"><xsl:value-of select="text()" /></xsl:attribute>
+		</xsl:element>
+	</xsl:template>
+
+	<xsl:template match="object/component">
+		<xsl:element name="property">
+			<xsl:attribute name="name"><xsl:value-of select="@name" /></xsl:attribute>
+			<xsl:attribute name="ref"><xsl:value-of select="@ref" /></xsl:attribute>
+		</xsl:element>
 	</xsl:template>
 </xsl:stylesheet>

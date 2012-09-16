@@ -8,6 +8,10 @@
  *             
  */
 
+/*
+ * Last Committed Details
+ * $Id$
+ */
 package com.selenium.repo.generator;
 
 import java.io.BufferedWriter;
@@ -84,8 +88,12 @@ public class ObjectGenerator {
 				String classToGenrate = beanClass.getAttribute("class");
 				String className = classToGenrate.replaceFirst(
 						Constants.GENERATED_OBJECT_PACKAGE_NAME + ".", "");
+
 				String classId = beanClass.getAttribute("id");
 				prop.setProperty(classToGenrate, classId);
+				if (!classList.containsKey(beanClass.getAttribute("id"))) {
+					classList.put(beanClass.getAttribute("id"), className);
+				}
 				if (classToGenrate
 						.startsWith(Constants.GENERATED_OBJECT_PACKAGE_NAME
 								+ ".")) {
@@ -94,7 +102,6 @@ public class ObjectGenerator {
 					String classFileName = className + ".java";
 					File fileToGenerate = new File(projectBaseDir
 							+ Constants.REPO_PACKAGE_PATH + "/" + classFileName);
-					classList.put(beanClass.getAttribute("id"), className);
 					LOGGER.info("Check if class {} already exists", className);
 					if (!fileToGenerate.exists()) {
 						LOGGER.info(
@@ -105,7 +112,8 @@ public class ObjectGenerator {
 						StringBuffer methodDef = new StringBuffer();
 
 						importStatment
-								.add("import com.selenium.repo.core.BaseElement;\r\n");
+								.add("import com.selenium.repo.core.SeleniumObject;\r\n");
+
 						NodeList propertyList = beanClass
 								.getElementsByTagName("property");
 						for (int j = 0; j < propertyList.getLength(); j++) {
@@ -124,7 +132,7 @@ public class ObjectGenerator {
 						sourceCode.append(importList.toString());
 						sourceCode.append("\r\n\r\n");
 						sourceCode.append("public class " + className
-								+ " extends BaseElement {\r\n");
+								+ " extends SeleniumObject {\r\n");
 						sourceCode.append(propertyDef.toString());
 						sourceCode.append("\r\n");
 						sourceCode.append("public " + className
@@ -199,17 +207,35 @@ public class ObjectGenerator {
 			StringBuffer propertyDef, StringBuffer methodDef, Element property) {
 		String propertyName = property.getAttribute("name");
 		String methodAppendString = createNameToAppendToMethod(propertyName);
+		String setAditonalCode = "";
 		if (property.hasAttribute("value")) {
 			propertyDef.append("private String " + propertyName + ";\r\n");
 			methodDef.append("public String get" + methodAppendString
 					+ "(){\r\n\treturn " + propertyName + NEWLINE_METHOD_END);
 			methodDef.append("public void set" + methodAppendString
 					+ "(String " + propertyName + "){\r\n\tthis."
-					+ propertyName + " = " + propertyName + NEWLINE_METHOD_END);
+					+ propertyName + " = " + propertyName);
+
+			if (propertyName.equals("elementXPath")) {
+				methodDef
+						.append(";\r\n\tsuper.setElementXPath(this.elementXPath)");
+			}
+			methodDef.append(NEWLINE_METHOD_END);
 		} else if (property.hasAttribute("ref")) {
 			String refClassName = classList.get(property.getAttribute("ref"));
-			String importString = "import com.selenium.repo.objects."
-					+ refClassName + ";\r\n";
+			String importString = "";
+
+			if (refClassName
+					.equalsIgnoreCase("com.selenium.repo.core.SeleniumProvider")) {
+				importString = "import " + refClassName + ";\r\n";
+				refClassName = refClassName.replaceFirst(
+						"com.selenium.repo.core.", "");
+				setAditonalCode = ";\r\n\tsuper.setProvider(this.provider)";
+			} else {
+
+				importString = "import com.selenium.repo.objects."
+						+ refClassName + ";\r\n";
+			}
 			if (!importStatment.contains(importString)) {
 				importStatment.add(importString);
 			}
@@ -220,7 +246,8 @@ public class ObjectGenerator {
 					+ NEWLINE_METHOD_END);
 			methodDef.append("public void set" + methodAppendString + "("
 					+ refClassName + " " + propertyName + "){\r\n\tthis."
-					+ propertyName + " = " + propertyName + NEWLINE_METHOD_END);
+					+ propertyName + " = " + propertyName + setAditonalCode
+					+ NEWLINE_METHOD_END);
 		}
 	}
 
